@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sử dụng Theme.AppCompat.Light.NoActionBar làm parent -->
+    <style name="Theme.MyApplication" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Bạn có thể thêm các tùy chỉnh khác nếu cần -->
+    </style>
+</resources>
