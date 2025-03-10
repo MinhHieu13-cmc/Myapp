@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 cameraProvider = cameraProviderFuture.get()
                 val preview = Preview.Builder().build().also {
-                    it.setSurfaceProvider(previewView.surfaceProvider)
+                    it.surfaceProvider = previewView.surfaceProvider
                 }
                 imageCapture = ImageCapture.Builder()
                     .setTargetResolution(android.util.Size(INPUT_SIZE, INPUT_SIZE))
@@ -134,6 +134,9 @@ class MainActivity : AppCompatActivity() {
                 if (inputBuffer != null) {
                     val output = Array(1) { FloatArray(2) }
                     tflite.run(inputBuffer, output)
+                    tflite.run {
+                        imageProxy.toBitmap()
+                    }
                     outputSum[0] += output[0][0]
                     outputSum[1] += output[0][1]
                     frameCount++
