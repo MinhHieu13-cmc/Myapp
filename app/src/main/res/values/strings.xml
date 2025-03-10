@@ -3,4 +3,19 @@
     <string name="capture_photo">Capture Photo</string>
     <string name="record_5s">Record 5s</string>
     <string name="prediction">Prediction:</string>
+
+    <string name="gpu">GPU</string>
+    <string name="unknown_name">Unknown</string>
+    <string name="front_camera">Front</string>
+    <string name="back_camera">Back</string>
+
+    <string name="name_cannot_black">Name cannot be blank</string>
+    <string name="save_success">Saved successfully!</string>
+    <string name="save_failed">Save failed!</string>
+    <string name="register">Register</string>
+    <string name="off">off</string>
+    <string name="on">on</string>
+    <string name="time_sample">09:18:53</string>
+    <string name="name_sample">Lê Văn Hậu</string>
+    <string name="personal_face_des">personal face</string>
 </resources>
