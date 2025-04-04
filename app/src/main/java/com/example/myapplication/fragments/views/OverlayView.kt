@@ -1,59 +1,46 @@
 package com.example.myapplication.fragments.views
 
-import vn.cmcati.core.models.LivenessResult
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
-import androidx.core.content.ContextCompat
-import com.example.myapplication.R
+import vn.cmcati.core.models.LivenessResult
 
 class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     private var results = listOf<LivenessResult>()
-    private var boxPaint = Paint()
-    private var textPaint = Paint()
-    private var landmarkPaint = Paint()
-    private var bounds = Rect()
 
-    init {
-        initPaints()
+    private val realPaint = Paint().apply {
+        color = Color.GREEN
+        strokeWidth = 4f
+        style = Paint.Style.STROKE
+    }
+    private val fakePaint = Paint().apply {
+        color = Color.RED
+        strokeWidth = 4f
+        style = Paint.Style.STROKE
+    }
+    private val textPaint = Paint().apply {
+        color = Color.WHITE
+        style = Paint.Style.FILL
+        textSize = 30f
+    }
+    private val backgroundPaint = Paint().apply {
+        color = Color.BLACK
+        alpha = 160
+        style = Paint.Style.FILL
     }
 
     fun clear() {
         results = listOf()
-        textPaint.reset()
-        boxPaint.reset()
         invalidate()
-        initPaints()
     }
 
-    private fun initPaints() {
-
-        textPaint.color = Color.WHITE
-        textPaint.style = Paint.Style.FILL
-        textPaint.textSize = 50f
-
-        boxPaint.color = ContextCompat.getColor(context!!, R.color.bounding_box_color)
-        boxPaint.strokeWidth = 8F
-        boxPaint.style = Paint.Style.STROKE
-
-        landmarkPaint.color = Color.RED
-        landmarkPaint.style = Paint.Style.FILL
-        landmarkPaint.strokeWidth = 10f
-    }
-
-    override fun draw(canvas: Canvas) {
-        super.draw(canvas)
-
-        results.forEach {
-            drawBox(canvas, it)
-        }
-
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        results.forEach { drawBox(canvas, it) }
     }
 
     private fun drawBox(canvas: Canvas, trackedObject: LivenessResult) {
@@ -61,24 +48,24 @@ class OverlayView(context: Context?, attrs: AttributeSet?) : View(context, attrs
         val top = trackedObject.boundingBox.y1 * height
         val right = trackedObject.boundingBox.x2 * width
         val bottom = trackedObject.boundingBox.y2 * height
-        Log.d("OverlayView", "width: $width, Height: $height")
 
-        val drawableText = if (trackedObject.livenessScore != null) {
-            "Liveness: ${trackedObject.livenessScore}"
-        } else {
-            "Unknown"
-        }
+        val score = trackedObject.livenessScore ?: 0f
+        val isReal = score > 0.5f
+        val label = if (isReal) "Real" else "Fake"
+        val boxPaint = if (isReal) realPaint else fakePaint
 
-        canvas.drawRoundRect(left, top, right, bottom, 15.0F, 15.0F, boxPaint)
-        canvas.drawText(drawableText, left, top + bounds.height(), textPaint)
+        canvas.drawRect(left, top, right, bottom, boxPaint)
+
+        val drawableText = "$label: ${String.format("%.2f", score)}"
+        val textWidth = textPaint.measureText(drawableText)
+        val textHeight = textPaint.textSize
+
+        canvas.drawRect(left, top - textHeight - 5f, left + textWidth + 10f, top, backgroundPaint)
+        canvas.drawText(drawableText, left + 5f, top - 5f, textPaint)
     }
 
     fun setResults(trackedObjects: List<LivenessResult>) {
-        results = trackedObjects
+        results = trackedObjects // Giới hạn số box đã được xử lý ở HomeFragment
         invalidate()
-    }
-
-    companion object {
-        private const val BOUNDING_RECT_TEXT_PADDING = 8
     }
 }
